@@ -14,17 +14,28 @@ import java.awt.Color;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 
 public class PatchOverlay extends Overlay {
 
-    private static final int MAX_DRAW_DISTANCE = 3;
+    private static final int MAX_DRAW_DISTANCE = 3333;
     private final Client client;
     private final DidICompostPlugin plugin;
     private final DidICompostConfig config;
 
+    public List<WorldPoint> getWorldPoints() {
+        return worldPoints;
+    }
+
+    public void setWorldPoints(List<WorldPoint> worldPoints) {
+        this.worldPoints = worldPoints;
+    }
+
+    public List<WorldPoint> worldPoints = new ArrayList<WorldPoint>();
     Color defaultColor = Color.RED;
 
     @Inject
@@ -43,8 +54,9 @@ public class PatchOverlay extends Overlay {
 
         Stroke stroke = new BasicStroke((float) 3);
 
-        WorldPoint worldPoint = new WorldPoint(2667,3371,0);
-        drawBox(graphics, worldPoint,0,defaultColor ,stroke,1,false);
+        for(int i = 0; i < worldPoints.size(); i++){
+            drawBox(graphics,worldPoints.get(i),0,defaultColor,stroke,1,false);
+        }
 
         return null;
     }
@@ -52,6 +64,20 @@ public class PatchOverlay extends Overlay {
     private void drawBox(Graphics2D graphics, WorldPoint worldPoint, int radius,
                          Color borderColour, Stroke borderStroke, int size, boolean excludeCorner)
     {
+        if(worldPoint.getPlane() != client.getPlane()){
+            return;
+        }
+
+        LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
+        if(lp == null){
+            return;
+        }
+
+        Polygon poly = Perspective.getCanvasTilePoly(client,lp);
+        if(poly == null){
+            return;
+        }
+
         graphics.setStroke(borderStroke);
         graphics.setColor(borderColour);
         graphics.draw(getSquare(worldPoint, radius, size, excludeCorner));
