@@ -29,7 +29,6 @@ import static net.runelite.api.MenuAction.WIDGET_TARGET_ON_GAME_OBJECT;
 )
 public class DidICompostPlugin extends Plugin
 {
-	private static final int MAX_DRAW_DISTANCE = 30;
 	@Inject
 	private Client client;
 
@@ -51,9 +50,14 @@ public class DidICompostPlugin extends Plugin
 	private static final Pattern INSPECT_PATCH = Pattern.compile(
 			"This is an? .+\\. The soil has been treated with (?<compostType>ultra|super|)compost\\..*");
 
-	private static final Pattern CLEAR_HERB = Pattern.compile("This herb patch is now empty.*");
+	private static final Pattern INSPECT_PATCH_NONE = Pattern.compile(
+			"This is an? .+\\. The soil has not been treated.*");
+
+	private static final Pattern CLEAR_HERB = Pattern.compile("The herb patch is now empty.*");
 	private static final Pattern CLEAR_PATCH = Pattern.compile("You have successfully cleared this patch for new crops.*");
 	private static final Pattern CLEAR_TREE = Pattern.compile("You examine the tree for signs of disease and find that it is in perfect health.*");
+
+	private static final Pattern CLEAR_ALLOTMENT = Pattern.compile("The allotment is now empty.*");
 
 
 
@@ -88,7 +92,12 @@ public class DidICompostPlugin extends Plugin
 		}
 
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
-		currentPatch = patchDef.getId();
+		//avoids swapping the id to random objects
+		for(int i = 0; i < FarmingPatches.values().length; i++){
+			if(FarmingPatches.values()[i].patchId == patchDef.getId()){
+				currentPatch = patchDef.getId();
+			}
+		}
 
 	}
 
@@ -130,7 +139,10 @@ public class DidICompostPlugin extends Plugin
 
 		if((matcher = CLEAR_PATCH.matcher(messageString)).matches() ||
 				(matcher = CLEAR_HERB.matcher(messageString)).matches() ||
-				(matcher = CLEAR_TREE.matcher(messageString)).matches()){
+				(matcher = CLEAR_TREE.matcher(messageString)).matches() ||
+				(matcher = INSPECT_PATCH_NONE.matcher(messageString)).matches() ||
+				(matcher = CLEAR_ALLOTMENT.matcher(messageString)).matches()){
+
 			deletePatch(currentPatch);
 		}
 
@@ -151,7 +163,6 @@ public class DidICompostPlugin extends Plugin
 
 	public void deletePatch(int currentPatch){
 		FarmingPatches oldPatch = FarmingPatches.fromPatchId(currentPatch);
-
 		if(oldPatch != null){
 			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
 			for(int i = 0; i < currentTiles.size(); i++){
