@@ -75,10 +75,12 @@ public class DidICompostPlugin extends Plugin
 	{
 		Boolean isCompost = false;
 		MenuAction action = menuClicked.getMenuAction();
-		if(action == WIDGET_TARGET_ON_GAME_OBJECT){
+		if(action == WIDGET_TARGET_ON_GAME_OBJECT)
+		{
 			Widget w = client.getSelectedWidget();
 			if(w != null){
-				if(compostIds.contains(w.getItemId())){
+				if(compostIds.contains(w.getItemId()))
+				{
 					isCompost = true;
 				}
 				if(w.getId() == WidgetInfo.SPELL_LUNAR_FERTILE_SOIL.getPackedId()){
@@ -87,21 +89,22 @@ public class DidICompostPlugin extends Plugin
 
 			}
 		}
-		if(action == GAME_OBJECT_FIFTH_OPTION){
+		if(action == GAME_OBJECT_FIFTH_OPTION)
+		{
 				isCompost = "Inspect".equals(menuClicked.getMenuOption());
 		}
 
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
 		//avoids swapping the id to random objects
-		for(int i = 0; i < FarmingPatches.values().length; i++){
-			if(FarmingPatches.values()[i].patchId == patchDef.getId()){
+		for(int i = 0; i < FarmingPatches.values().length; i++)
+		{
+			if(FarmingPatches.values()[i].patchId == patchDef.getId())
+			{
 				currentPatch = patchDef.getId();
 			}
 		}
 
 	}
-
-
 	@Subscribe
 	public void onChatMessage(ChatMessage message)
 	{
@@ -133,8 +136,9 @@ public class DidICompostPlugin extends Plugin
 
 		}
 
-		if(compostType == "ultra" || compostType == "super" || compostType == "compost"){
-			addPatch(currentPatch,compostType);
+		if(compostType == "ultra" || compostType == "super" || compostType == "compost")
+		{
+			addPatch(currentPatch);
 		}
 
 		if((matcher = CLEAR_PATCH.matcher(messageString)).matches() ||
@@ -148,25 +152,28 @@ public class DidICompostPlugin extends Plugin
 
 	}
 
-	public void addPatch(int currentPatch, String compostType){
-
+	public void addPatch(int currentPatch)
+	{
 		FarmingPatches newPatch = FarmingPatches.fromPatchId(currentPatch);
 
-		if(newPatch != null){
+		if(newPatch != null)
+		{
 			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
 			currentTiles.add(newPatch.tile);
 			patchOverlay.setWorldPoints(currentTiles);
 		}
-
-
 	}
 
-	public void deletePatch(int currentPatch){
+	public void deletePatch(int currentPatch)
+	{
 		FarmingPatches oldPatch = FarmingPatches.fromPatchId(currentPatch);
-		if(oldPatch != null){
+		if(oldPatch != null)
+		{
 			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
-			for(int i = 0; i < currentTiles.size(); i++){
-				if(currentTiles.get(i) == oldPatch.tile){
+			for(int i = 0; i < currentTiles.size(); i++)
+			{
+				if(currentTiles.get(i) == oldPatch.tile)
+				{
 					currentTiles.remove(i);
 				}
 			}
