@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -53,8 +52,10 @@ public class DidICompostPlugin extends Plugin
 			"This is an? .+\\. The soil has been treated with (?<compostType>ultra|super|)compost\\..*");
 
 	private static final Pattern CLEAR_HERB = Pattern.compile("This herb patch is now empty.*");
+	private static final Pattern CLEAR_PATCH = Pattern.compile("You have successfully cleared this patch for new crops.*");
+	private static final Pattern CLEAR_TREE = Pattern.compile("You examine the tree for signs of disease and find that it is in perfect health.*");
 
-	private static final Pattern START_CLEAR_HERB = Pattern.compile("You begin to harvest the herb patch.*");
+
 
 	private static final ImmutableSet<Integer> COMPOST_ITEMS = ImmutableSet.of(
 			ItemID.COMPOST,
@@ -86,19 +87,8 @@ public class DidICompostPlugin extends Plugin
 				isCompost = "Inspect".equals(menuClicked.getMenuOption());
 		}
 
-
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
 		currentPatch = patchDef.getId();
-		System.out.println(currentPatch);
-
-		//red box needs to become a compost icon
-
-		//draws only when composted
-
-		//need to actually grab every fucking patch and location of patch
-
-		//regionID 10548 location 44,43
-
 
 	}
 
@@ -138,7 +128,9 @@ public class DidICompostPlugin extends Plugin
 			addPatch(currentPatch,compostType);
 		}
 
-		if((matcher = START_CLEAR_HERB.matcher(messageString)).matches()){
+		if((matcher = CLEAR_PATCH.matcher(messageString)).matches() ||
+				(matcher = CLEAR_HERB.matcher(messageString)).matches() ||
+				(matcher = CLEAR_TREE.matcher(messageString)).matches()){
 			deletePatch(currentPatch);
 		}
 
@@ -180,15 +172,6 @@ public class DidICompostPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(patchOverlay);
-	}
-
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
-		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Example says " + config.greeting(), null);
-		}
 	}
 
 	@Provides
