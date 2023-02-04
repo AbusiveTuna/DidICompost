@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuOptionClicked;
@@ -16,8 +17,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,25 +52,25 @@ public class DidICompostPlugin extends Plugin
 	private static final Pattern INSPECT_PATCH = Pattern.compile(
 			"This is an? .+\\. The soil has been treated with (?<compostType>ultra|super|)compost\\..*");
 
+	private static final Pattern CLEAR_HERB = Pattern.compile("This herb patch is now empty.*");
+
+	private static final Pattern START_CLEAR_HERB = Pattern.compile("You begin to harvest the herb patch.*");
+
 	private static final ImmutableSet<Integer> COMPOST_ITEMS = ImmutableSet.of(
 			ItemID.COMPOST,
 			ItemID.SUPERCOMPOST,
 			ItemID.ULTRACOMPOST,
 			ItemID.BOTTOMLESS_COMPOST_BUCKET_22997
 	);
-
-	//final Map<FarmingPatch, PendingCompost> pendingCompostActions = new HashMap<>();
-
 	private static final ArrayList<Integer> compostIds = new ArrayList<>(Arrays.asList(ItemID.COMPOST, ItemID.SUPERCOMPOST, ItemID.ULTRACOMPOST, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997));
 
 	int currentPatch = 0;
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
 	{
-
 		Boolean isCompost = false;
-		MenuAction test = menuClicked.getMenuAction();
-		if(test == WIDGET_TARGET_ON_GAME_OBJECT){
+		MenuAction action = menuClicked.getMenuAction();
+		if(action == WIDGET_TARGET_ON_GAME_OBJECT){
 			Widget w = client.getSelectedWidget();
 			if(w != null){
 				if(compostIds.contains(w.getItemId())){
@@ -82,17 +82,20 @@ public class DidICompostPlugin extends Plugin
 
 			}
 		}
-		if(test == GAME_OBJECT_FIFTH_OPTION){
+		if(action == GAME_OBJECT_FIFTH_OPTION){
 				isCompost = "Inspect".equals(menuClicked.getMenuOption());
 		}
 
 
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
-		if(patchDef.getId() == 8555){
+		currentPatch = patchDef.getId();
+		System.out.println(currentPatch);
 
-			currentPatch = patchDef.getId();
-			//update something with patch ID
-		}
+		//red box needs to become a compost icon
+
+		//draws only when composted
+
+		//need to actually grab every fucking patch and location of patch
 
 		//regionID 10548 location 44,43
 
@@ -103,7 +106,6 @@ public class DidICompostPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage message)
 	{
-
 		String messageString = message.getMessage();
 		String compostType = "";
 		Matcher matcher;
@@ -133,18 +135,40 @@ public class DidICompostPlugin extends Plugin
 		}
 
 		if(compostType == "ultra" || compostType == "super" || compostType == "compost"){
-			updatePatch(currentPatch,compostType);
+			addPatch(currentPatch,compostType);
 		}
 
+		if((matcher = START_CLEAR_HERB.matcher(messageString)).matches()){
+			deletePatch(currentPatch);
+		}
 
+	}
+
+	public void addPatch(int currentPatch, String compostType){
+
+		FarmingPatches newPatch = FarmingPatches.fromPatchId(currentPatch);
+
+		if(newPatch != null){
+			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
+			currentTiles.add(newPatch.tile);
+			patchOverlay.setWorldPoints(currentTiles);
+		}
 
 
 	}
 
-	public void updatePatch(int currentPatch, String compostType){
+	public void deletePatch(int currentPatch){
+		FarmingPatches oldPatch = FarmingPatches.fromPatchId(currentPatch);
 
-		System.out.println(currentPatch);
-		System.out.println(compostType);
+		if(oldPatch != null){
+			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
+			for(int i = 0; i < currentTiles.size(); i++){
+				if(currentTiles.get(i) == oldPatch.tile){
+					currentTiles.remove(i);
+				}
+			}
+			patchOverlay.setWorldPoints(currentTiles);
+		}
 	}
 	@Override
 	protected void startUp() throws Exception
