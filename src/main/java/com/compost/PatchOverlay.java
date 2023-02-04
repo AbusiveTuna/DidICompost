@@ -9,6 +9,8 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.util.ImageUtil;
+
 import java.awt.Color;
 
 import javax.imageio.ImageIO;
@@ -24,18 +26,19 @@ import java.util.List;
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 
-public class PatchOverlay extends Overlay {
-
-    private static final int MAX_DRAW_DISTANCE = 3333;
+public class PatchOverlay extends Overlay
+{
     private final Client client;
     private final DidICompostPlugin plugin;
     private final DidICompostConfig config;
 
-    public List<WorldPoint> getWorldPoints() {
+    public List<WorldPoint> getWorldPoints()
+    {
         return worldPoints;
     }
 
-    public void setWorldPoints(List<WorldPoint> worldPoints) {
+    public void setWorldPoints(List<WorldPoint> worldPoints)
+    {
         this.worldPoints = worldPoints;
     }
 
@@ -43,7 +46,8 @@ public class PatchOverlay extends Overlay {
     Color defaultColor = Color.RED;
 
     @Inject
-    private PatchOverlay(Client client, DidICompostConfig config, DidICompostPlugin plugin) {
+    private PatchOverlay(Client client, DidICompostConfig config, DidICompostPlugin plugin)
+    {
         this.client = client;
         this.config = config;
         this.plugin = plugin;
@@ -53,10 +57,12 @@ public class PatchOverlay extends Overlay {
     }
 
     @Override
-    public Dimension render(Graphics2D graphics){
-
-        for(int i = 0; i < worldPoints.size(); i++){
-            try {
+    public Dimension render(Graphics2D graphics)
+    {
+        for(int i = 0; i < worldPoints.size(); i++)
+        {
+            try
+            {
                 drawBucket(graphics,worldPoints.get(i));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -66,23 +72,26 @@ public class PatchOverlay extends Overlay {
         return null;
     }
 
-    private void drawBucket(Graphics2D graphics, WorldPoint worldPoint) throws IOException {
-        if(worldPoint.getPlane() != client.getPlane()){
+    private void drawBucket(Graphics2D graphics, WorldPoint worldPoint) throws IOException
+    {
+        if(worldPoint.getPlane() != client.getPlane())
+        {
             return;
         }
 
         LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
-        if(lp == null){
+        if(lp == null)
+        {
             return;
         }
 
         Polygon poly = Perspective.getCanvasTilePoly(client,lp);
-        if(poly == null){
+        if(poly == null)
+        {
             return;
         }
 
-        String dir = System.getProperty("user.dir");
-        BufferedImage img = ImageIO.read(new File(dir + "\\src\\images\\Bottomless_compost_bucket.png"));
+        final BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
 
         net.runelite.api.Point point = XYToPoint(worldPoint.getX(),worldPoint.getY(),worldPoint.getPlane());
         graphics.drawImage(img, point.getX() , point.getY(), null);
