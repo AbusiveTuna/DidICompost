@@ -9,7 +9,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public enum FarmingPatches
 {
-    //allotment/flower/herb patches
     ARDY_ALLOTMENT_NORTH(8555, new WorldPoint(2667,3371,0)),
     ARDY_ALLOTMENT_SOUTH(8554, new WorldPoint(2667,3378,0)),
     ARDY_FLOWER(7849, new WorldPoint(2667,3374,0)),
