@@ -56,8 +56,8 @@ public class DidICompostPlugin extends Plugin
 	private static final Pattern CLEAR_HERB = Pattern.compile("The herb patch is now empty.*");
 	private static final Pattern CLEAR_PATCH = Pattern.compile("You have successfully cleared this patch for new crops.*");
 	private static final Pattern CLEAR_TREE = Pattern.compile("You examine the tree for signs of disease and find that it is in perfect health.*");
-
 	private static final Pattern CLEAR_ALLOTMENT = Pattern.compile("The allotment is now empty.*");
+	private static final Pattern CLEAR_SEAWEED = Pattern.compile("You pick some giant seaweed.*");
 
 
 
