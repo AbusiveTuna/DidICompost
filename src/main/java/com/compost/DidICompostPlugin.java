@@ -145,7 +145,8 @@ public class DidICompostPlugin extends Plugin
 				(matcher = CLEAR_HERB.matcher(messageString)).matches() ||
 				(matcher = CLEAR_TREE.matcher(messageString)).matches() ||
 				(matcher = INSPECT_PATCH_NONE.matcher(messageString)).matches() ||
-				(matcher = CLEAR_ALLOTMENT.matcher(messageString)).matches()){
+				(matcher = CLEAR_ALLOTMENT.matcher(messageString)).matches() ||
+				(matcher = CLEAR_SEAWEED.matcher(messageString)).matches()){
 
 			deletePatch(currentPatch);
 		}
