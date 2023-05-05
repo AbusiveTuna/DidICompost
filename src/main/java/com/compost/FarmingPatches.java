@@ -73,7 +73,7 @@ public enum FarmingPatches
     CATHERBY_FRUIT(7965, new WorldPoint(2860,3433,0)),
     FARMING_GUILD_FRUIT(34007, new WorldPoint(1243,3758,0)),
     GNOME_STRONGHOLD_FRUIT(7962, new WorldPoint(2475,3446,0)),
-    GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2490,3160,0)),
+    GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2510,3160,0)),
     BRIMHAVEN_FRUIT(7964, new WorldPoint(2765,3212,0)),
     LLETYA_FRUIT(26579, new WorldPoint(2346,3162,0)),
     //spirit trees
