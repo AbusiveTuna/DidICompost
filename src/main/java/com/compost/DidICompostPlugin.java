@@ -58,9 +58,9 @@ public class DidICompostPlugin extends Plugin
 	private static final Pattern CLEAR_TREE = Pattern.compile("You examine the tree for signs of disease and find that it is in perfect health.*");
 	private static final Pattern CLEAR_ALLOTMENT = Pattern.compile("The allotment is now empty.*");
 	private static final Pattern CLEAR_SEAWEED = Pattern.compile("You pick some giant seaweed.*");
-
-
-
+	private static final Pattern CLEAR_BELLA = Pattern.compile("You pick some deadly nightshade.*");
+	private static final Pattern CLEAR_MUSHROOM = Pattern.compile("You pick a Bittercap mushroom.*");
+	
 	private static final ImmutableSet<Integer> COMPOST_ITEMS = ImmutableSet.of(
 			ItemID.COMPOST,
 			ItemID.SUPERCOMPOST,
@@ -146,7 +146,9 @@ public class DidICompostPlugin extends Plugin
 				(matcher = CLEAR_TREE.matcher(messageString)).matches() ||
 				(matcher = INSPECT_PATCH_NONE.matcher(messageString)).matches() ||
 				(matcher = CLEAR_ALLOTMENT.matcher(messageString)).matches() ||
-				(matcher = CLEAR_SEAWEED.matcher(messageString)).matches()){
+				(matcher = CLEAR_SEAWEED.matcher(messageString)).matches() ||
+				(matcher = CLEAR_MUSHROOM.matcher(messageString)).matches() ||
+				(matcher = CLEAR_BELLA.matcher(messageString)).matches()){
 
 			deletePatch(currentPatch);
 		}
