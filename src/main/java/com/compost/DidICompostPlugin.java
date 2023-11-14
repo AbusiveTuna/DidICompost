@@ -70,6 +70,7 @@ public class DidICompostPlugin extends Plugin
 	private static final ArrayList<Integer> compostIds = new ArrayList<>(Arrays.asList(ItemID.COMPOST, ItemID.SUPERCOMPOST, ItemID.ULTRACOMPOST, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997));
 
 	int currentPatch = 0;
+
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
 	{
@@ -105,6 +106,7 @@ public class DidICompostPlugin extends Plugin
 		}
 
 	}
+
 	@Subscribe
 	public void onChatMessage(ChatMessage message)
 	{
@@ -164,6 +166,7 @@ public class DidICompostPlugin extends Plugin
 			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
 			currentTiles.add(newPatch.tile);
 			patchOverlay.setWorldPoints(currentTiles);
+			savePatches(currentTiles);
 		}
 	}
 
@@ -183,9 +186,31 @@ public class DidICompostPlugin extends Plugin
 			patchOverlay.setWorldPoints(currentTiles);
 		}
 	}
+
+	public void savePatches(List<WorldPoint> currentTiles)
+	{
+		//can possibly even just save the list of world points??
+		//instead of making any sort of extra state, we'll have to see
+
+		//grab current state file (if any, create it if not)
+		//parse through state file
+		//match something in statefile to know which line this is
+		//if add, switch it to true
+		//if delete, switch it to false
+	}
+
+	public void loadPatches()
+	{
+		//grab current state file (if any)
+		//parse through state file
+		//draw overlay of each patch found in state file that is set to true
+	}
+
+
 	@Override
 	protected void startUp() throws Exception
 	{
+		loadPatches();
 		overlayManager.add(patchOverlay);
 	}
 

@@ -34,7 +34,7 @@ public enum FarmingPatches
     HOSIDIUS_FLOWER(27111, new WorldPoint(1735,3554,0)),
     HOSIDIUS_HERB(27115, new WorldPoint(1738,3551,0)),
 
-    HARMONY_HERB(9372, new WorldPoint(3790,2838,0)),
+    HARMONY_HERB(9372, new WorldPoint(3790,2838,0)), // broken? SNP reported on it
     HARMONY_ALLOTMENT(21950, new WorldPoint(3794,2837,0)),
 
     FARMING_GUILD_ALLOTMENT_NORTH(33694, new WorldPoint(1267,3732,0)),
@@ -73,7 +73,7 @@ public enum FarmingPatches
     CATHERBY_FRUIT(7965, new WorldPoint(2860,3433,0)),
     FARMING_GUILD_FRUIT(34007, new WorldPoint(1243,3758,0)),
     GNOME_STRONGHOLD_FRUIT(7962, new WorldPoint(2475,3446,0)),
-    GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2510,3160,0)),
+    GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2510,3160,0)), //broken, self report + failed update
     BRIMHAVEN_FRUIT(7964, new WorldPoint(2765,3212,0)),
     LLETYA_FRUIT(26579, new WorldPoint(2346,3162,0)),
     //spirit trees
@@ -87,7 +87,7 @@ public enum FarmingPatches
     SEAWEED_NORTH(30500, new WorldPoint(3733,10273,1)),
     SEAWEED_SOUTH(30501, new WorldPoint(3733,10268,1)),
 
-    //Hard(Kappa)wood
+    //Hardwood
     HARDWOOD_WEST(30481, new WorldPoint(3703,3836,0)),
     HARDWOOD_SOUTH(30480, new WorldPoint(3707,3834,0)),
     HARDWOOD_EAST(30482, new WorldPoint(3714,3836,0)),
