@@ -73,7 +73,7 @@ public enum FarmingPatches
     CATHERBY_FRUIT(7965, new WorldPoint(2860,3433,0)),
     FARMING_GUILD_FRUIT(34007, new WorldPoint(1243,3758,0)),
     GNOME_STRONGHOLD_FRUIT(7962, new WorldPoint(2475,3446,0)),
-    GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2510,3160,0)),
+    GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2490,3180,0)),
     BRIMHAVEN_FRUIT(7964, new WorldPoint(2765,3212,0)),
     LLETYA_FRUIT(26579, new WorldPoint(2346,3162,0)),
     //spirit trees
@@ -93,6 +93,7 @@ public enum FarmingPatches
     HARDWOOD_EAST(30482, new WorldPoint(3714,3836,0)),
 
     //special
+    ALKHARID_CACTUS(7771, new WorldPoint(3315,3203,0)),
     FARMING_GUILD_CACTUS(33761, new WorldPoint(1264,3747,0)),
     FARMING_GUILD_CELSTRUS(34629, new WorldPoint(1245,3751,0)),
     FARMING_GUILD_REDWOOD(34059, new WorldPoint(1232,3753,0)),
