@@ -52,7 +52,6 @@ public class PatchOverlay extends Overlay
         this.config = config;
         this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.LOW);
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
 
@@ -91,10 +90,34 @@ public class PatchOverlay extends Overlay
             return;
         }
 
-        final BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
+
+        BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
+        BufferedImage resizedImage = img;
+
+        if(config.iconSize() == CompostIconSize.LARGE) {
+            int newWidth = (int)(img.getWidth() * 1.3);
+            int newHeight = (int)(img.getHeight() * 1.3);
+            resizedImage = resizeImage(img, newWidth, newHeight);
+        }
+        else if(config.iconSize() == CompostIconSize.SMALL) {
+            int newWidth = (int)(img.getWidth() * 0.7);
+            int newHeight = (int)(img.getHeight() * 0.7);
+            resizedImage = resizeImage(img, newWidth, newHeight);
+        }
 
         net.runelite.api.Point point = XYToPoint(worldPoint.getX(),worldPoint.getY(),worldPoint.getPlane());
-        graphics.drawImage(img, point.getX() , point.getY(), null);
+        graphics.drawImage(resizedImage, point.getX() , point.getY(), null);
+    }
+
+    private BufferedImage resizeImage(BufferedImage originalImage, int newWidth, int newHeight) {
+        Image tmp = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return resizedImage;
     }
     private Point XYToPoint(int x, int y, int z)
     {
