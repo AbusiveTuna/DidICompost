@@ -8,15 +8,17 @@ import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,7 +85,8 @@ public class DidICompostPlugin extends Plugin
 				{
 					isCompost = true;
 				}
-				if(w.getId() == WidgetInfo.SPELL_LUNAR_FERTILE_SOIL.getPackedId()){
+
+				if(w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL){
 					isCompost = true;
 				}
 
