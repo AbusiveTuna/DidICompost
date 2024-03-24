@@ -34,6 +34,11 @@ public enum FarmingPatches
     HOSIDIUS_FLOWER(27111, new WorldPoint(1735,3554,0)),
     HOSIDIUS_HERB(27115, new WorldPoint(1738,3551,0)),
 
+    VALAMORE_ALLOTMENT_NORTH(50696, new WorldPoint(1582,3100,0)),
+    VALAMORE_ALLOTMENT_SOUTH(50695, new WorldPoint(1586,3095,0)),
+    VALAMORE_FLOWER(50693, new WorldPoint(1585,3098,0)),
+    VALAMORE_HERB(50697, new WorldPoint(1582,3095,0)),
+
     HARMONY_HERB(9372, new WorldPoint(3790,2838,0)),
     HARMONY_ALLOTMENT(21950, new WorldPoint(3794,2837,0)),
 
@@ -91,6 +96,7 @@ public enum FarmingPatches
     HARDWOOD_WEST(30481, new WorldPoint(3703,3836,0)),
     HARDWOOD_SOUTH(30480, new WorldPoint(3707,3834,0)),
     HARDWOOD_EAST(30482, new WorldPoint(3714,3836,0)),
+    VALAMORE_HARDWOOD(50692, new WorldPoint(1687,2973,0)),
 
     //special
     ALKHARID_CACTUS(7771, new WorldPoint(3315,3203,0)),
