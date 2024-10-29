@@ -45,6 +45,16 @@ public class PatchOverlay extends Overlay
     public List<WorldPoint> worldPoints = new ArrayList<WorldPoint>();
     Color defaultColor = Color.RED;
 
+    private List<WorldPoint> needsCompostPoints = new ArrayList<>();
+
+    public List<WorldPoint> getNeedsCompostPoints() {
+        return needsCompostPoints;
+    }
+
+    public void setNeedsCompostPoints(List<WorldPoint> points) {
+        this.needsCompostPoints = points;
+    }
+
     @Inject
     private PatchOverlay(Client client, DidICompostConfig config, DidICompostPlugin plugin)
     {
@@ -65,6 +75,16 @@ public class PatchOverlay extends Overlay
                 drawBucket(graphics,worldPoints.get(i));
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }
+        }
+
+        if (config.showNeedsCompost()) {
+            for (WorldPoint point : needsCompostPoints) {
+                try {
+                    drawNeedsCompost(graphics, point);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -134,5 +154,37 @@ public class PatchOverlay extends Overlay
                 z);
     }
 
+    private void drawNeedsCompost(Graphics2D graphics, WorldPoint worldPoint) throws IOException {
+        if (worldPoint.getPlane() != client.getPlane()) {
+            return;
+        }
+
+        LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
+        if (lp == null) {
+            return;
+        }
+
+        Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+        if (poly == null) {
+            return;
+        }
+
+        BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/icon-gray.png");
+        BufferedImage resizedImage = img;
+
+        if(config.iconSize() == CompostIconSize.LARGE) {
+            int newWidth = (int)(img.getWidth() * 1.3);
+            int newHeight = (int)(img.getHeight() * 1.3);
+            resizedImage = resizeImage(img, newWidth, newHeight);
+        }
+        else if(config.iconSize() == CompostIconSize.SMALL) {
+            int newWidth = (int)(img.getWidth() * 0.7);
+            int newHeight = (int)(img.getHeight() * 0.7);
+            resizedImage = resizeImage(img, newWidth, newHeight);
+        }
+
+        net.runelite.api.Point point = XYToPoint(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane());
+        graphics.drawImage(resizedImage, point.getX(), point.getY(), null);
+    }
 
 }
