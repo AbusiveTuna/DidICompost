@@ -18,4 +18,14 @@ public interface DidICompostConfig extends Config
             return CompostIconSize.MEDIUM;
         }
 
+    @ConfigItem(
+            keyName = "showNeedsCompost",
+            name = "Show Needs Compost",
+            description = "Shows text over empty patches that need composting",
+            position = 2
+    )
+    default boolean showNeedsCompost()
+    {
+        return false;
+    }
 }

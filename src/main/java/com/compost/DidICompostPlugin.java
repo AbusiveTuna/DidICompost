@@ -15,6 +15,13 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.RuneLite;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.awt.*;
 import java.util.*;
@@ -161,6 +168,14 @@ public class DidICompostPlugin extends Plugin
 				(matcher = CLEAR_BELLA.matcher(messageString)).matches()){
 
 			deletePatch(currentPatch);
+			FarmingPatches patch = FarmingPatches.fromPatchId(currentPatch);
+			if (patch != null) {
+				List<WorldPoint> needsCompost = patchOverlay.getNeedsCompostPoints();
+				if (!needsCompost.contains(patch.tile)) {
+					needsCompost.add(patch.tile);
+					patchOverlay.setNeedsCompostPoints(needsCompost);
+				}
+			}
 		}
 
 	}
@@ -174,10 +189,14 @@ public class DidICompostPlugin extends Plugin
 			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
 			currentTiles.add(newPatch.tile);
 			patchOverlay.setWorldPoints(currentTiles);
+			
+			List<WorldPoint> needsCompost = patchOverlay.getNeedsCompostPoints();
+			needsCompost.remove(newPatch.tile);
+			patchOverlay.setNeedsCompostPoints(needsCompost);
+			
 			if(!savedPatches.contains(currentPatch)){
 				savedPatches.add(currentPatch);
 			}
-
 		}
 	}
 
