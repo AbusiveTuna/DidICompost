@@ -16,14 +16,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.RuneLite;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -52,10 +45,6 @@ public class DidICompostPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	private ArrayList<Integer> savedPatches = new ArrayList<>();
-
-	private static final String COMPOST_DIR = RuneLite.RUNELITE_DIR + "/did-I-compost/";
-
-	private static final String SAVED_PATCHES_FILE = COMPOST_DIR + "saved-patches.txt";
 
 	private static final Pattern COMPOST_USED_ON_PATCH = Pattern.compile(
 			"You treat the .+ with (?<compostType>ultra|super|)compost\\.");
@@ -218,57 +207,15 @@ public class DidICompostPlugin extends Plugin
 		}
 	}
 
-	public void savePatches() {
-		    File dir = new File(COMPOST_DIR);
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
-
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(SAVED_PATCHES_FILE))) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < savedPatches.size(); i++) {
-                sb.append(savedPatches.get(i));
-                if (i < savedPatches.size() - 1) {
-                    sb.append(",");
-                }
-            }
-            writer.write(sb.toString());
-        } catch (IOException e) {
-            
-        }
-	}
-
-	public void loadPatches() {
-		try (BufferedReader reader = new BufferedReader(new FileReader(SAVED_PATCHES_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-
-                for (String part : parts) {
-                    try {
-                        int patch = Integer.parseInt(part.trim());
-                        addPatch(patch);
-                    } catch (NumberFormatException e) {
-                        
-                    }
-                }
-            }
-        } catch (IOException e) {
-
-        }
-	}
-
 	@Override
 	protected void startUp() throws Exception
 	{
 		overlayManager.add(patchOverlay);
-		loadPatches();
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		savePatches();
 		overlayManager.remove(patchOverlay);
 	}
 

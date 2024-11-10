@@ -43,7 +43,6 @@ public class PatchOverlay extends Overlay
     }
 
     public List<WorldPoint> worldPoints = new ArrayList<WorldPoint>();
-    Color defaultColor = Color.RED;
 
     private List<WorldPoint> needsCompostPoints = new ArrayList<>();
 
