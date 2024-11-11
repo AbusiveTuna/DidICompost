@@ -132,7 +132,7 @@ public class DidICompostPlugin extends Plugin
 
 		}
 
-		if(compostType == "ultra" || compostType == "super" || compostType == "compost")
+		if(compostType.equals("ultra") || compostType.equals("super") || compostType.equals("compost"))
 		{
 			addPatch(currentPatch);
 		}
@@ -154,7 +154,7 @@ public class DidICompostPlugin extends Plugin
 		}
 	}
 
-	public void addPatch(int currentPatch)
+	private void addPatch(int currentPatch)
 	{
 		FarmingPatches newPatch = FarmingPatches.fromPatchId(currentPatch);
 
@@ -165,7 +165,7 @@ public class DidICompostPlugin extends Plugin
 		}
 	}
 
-	public void deletePatch(int currentPatch)
+	private void deletePatch(int currentPatch)
 	{
 		FarmingPatches oldPatch = FarmingPatches.fromPatchId(currentPatch);
 		if(oldPatch != null)
