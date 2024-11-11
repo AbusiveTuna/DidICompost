@@ -11,6 +11,7 @@ import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -67,6 +68,20 @@ public class DidICompostPlugin extends Plugin
 	);
 
 	private int currentPatch = 0;
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getNewValue() == null || !"didICompost".equals(event.getGroup()))
+		{
+			return;
+		}
+
+		if ("iconSize".equals(event.getKey()))
+		{
+			patchOverlay.updateImages();
+		}
+	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
@@ -176,6 +191,7 @@ public class DidICompostPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		overlayManager.add(patchOverlay);
+		patchOverlay.updateImages();
 	}
 
 	@Override
@@ -185,6 +201,7 @@ public class DidICompostPlugin extends Plugin
 		patchOverlay.getWorldPoints().clear();
 		patchOverlay.getNeedsCompostPoints().clear();
 		overlayManager.remove(patchOverlay);
+		patchOverlay.resetImages();
 	}
 
 	@Provides
