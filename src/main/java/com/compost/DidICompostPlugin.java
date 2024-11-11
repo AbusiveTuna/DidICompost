@@ -5,23 +5,18 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.RuneLite;
 
-import java.util.*;
-import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 import static net.runelite.api.MenuAction.GAME_OBJECT_FIFTH_OPTION;
 import static net.runelite.api.MenuAction.WIDGET_TARGET_ON_GAME_OBJECT;
@@ -36,15 +31,10 @@ public class DidICompostPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private DidICompostConfig config;
-
-	@Inject
 	private PatchOverlay patchOverlay;
 
 	@Inject
 	private OverlayManager overlayManager;
-
-	private ArrayList<Integer> savedPatches = new ArrayList<>();
 
 	private static final Pattern COMPOST_USED_ON_PATCH = Pattern.compile(
 			"You treat the .+ with (?<compostType>ultra|super|)compost\\.");
@@ -72,151 +62,116 @@ public class DidICompostPlugin extends Plugin
 			ItemID.ULTRACOMPOST,
 			ItemID.BOTTOMLESS_COMPOST_BUCKET_22997
 	);
-	private static final ArrayList<Integer> compostIds = new ArrayList<>(Arrays.asList(ItemID.COMPOST, ItemID.SUPERCOMPOST, ItemID.ULTRACOMPOST, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997));
 
-	int currentPatch = 0;
+	private int currentPatch = 0;
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getNewValue() == null || !"didICompost".equals(event.getGroup()))
+		{
+			return;
+		}
+
+		if ("iconSize".equals(event.getKey()))
+		{
+			patchOverlay.updateImages();
+		}
+	}
+
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
 	{
-		Boolean isCompost = false;
+		boolean isCompost = false;
 		MenuAction action = menuClicked.getMenuAction();
 		if(action == WIDGET_TARGET_ON_GAME_OBJECT)
 		{
 			Widget w = client.getSelectedWidget();
 			if(w != null){
-				if(compostIds.contains(w.getItemId()))
-				{
-					isCompost = true;
-				}
-
-				if(w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL){
-					isCompost = true;
-				}
-
+				isCompost = w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL || COMPOST_ITEMS.contains(w.getItemId());
 			}
 		}
 		if(action == GAME_OBJECT_FIFTH_OPTION)
 		{
-				isCompost = "Inspect".equals(menuClicked.getMenuOption());
+			isCompost = "Inspect".equals(menuClicked.getMenuOption());
+		}
+
+		if (!isCompost)
+		{
+			return;
 		}
 
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
 		//avoids swapping the id to random objects
-		for(int i = 0; i < FarmingPatches.values().length; i++)
+		FarmingPatches patch = FarmingPatches.fromPatchId(patchDef.getId());
+		if (patch != null)
 		{
-			if(FarmingPatches.values()[i].patchId == patchDef.getId())
-			{
-				currentPatch = patchDef.getId();
-			}
+			currentPatch = patch.getPatchId();
 		}
-
 	}
+
 	@Subscribe
 	public void onChatMessage(ChatMessage message)
 	{
 		String messageString = message.getMessage();
-		String compostType = "";
-		Matcher matcher;
-		if((matcher = COMPOST_USED_ON_PATCH.matcher(messageString)).matches() ||
-				(matcher = FERTILE_SOIL_CAST.matcher(messageString)).find() ||
-				(matcher = ALREADY_TREATED.matcher(messageString)).matches() ||
-				(matcher = INSPECT_PATCH.matcher(messageString)).matches() )
-		{
-
-				String compostGroup = matcher.group("compostType");
-
-				switch(compostGroup){
-
-					case "ultra":
-						compostType = "ultra";
-						break;
-
-					case "super":
-						compostType = "super";
-						break;
-
-					default:
-						compostType = "compost";
-						break;
-				}
-
-		}
-
-		if(compostType == "ultra" || compostType == "super" || compostType == "compost")
+		if (COMPOST_USED_ON_PATCH.matcher(messageString).matches() ||
+				FERTILE_SOIL_CAST.matcher(messageString).find() ||
+				ALREADY_TREATED.matcher(messageString).matches() ||
+				INSPECT_PATCH.matcher(messageString).matches())
 		{
 			addPatch(currentPatch);
+			return;
 		}
 
-		if((matcher = CLEAR_PATCH.matcher(messageString)).matches() ||
-				(matcher = CLEAR_HERB.matcher(messageString)).matches() ||
-				(matcher = CLEAR_TREE.matcher(messageString)).matches() ||
-				(matcher = INSPECT_PATCH_NONE.matcher(messageString)).matches() ||
-				(matcher = CLEAR_ALLOTMENT.matcher(messageString)).matches() ||
-				(matcher = CLEAR_SEAWEED.matcher(messageString)).matches() ||
-				(matcher = CLEAR_MUSHROOM.matcher(messageString)).matches() ||
-				(matcher = CLEAR_BELLA.matcher(messageString)).matches()){
-
+		if (CLEAR_PATCH.matcher(messageString).matches() ||
+				CLEAR_HERB.matcher(messageString).matches() ||
+				CLEAR_TREE.matcher(messageString).matches() ||
+				INSPECT_PATCH_NONE.matcher(messageString).matches() ||
+				CLEAR_ALLOTMENT.matcher(messageString).matches() ||
+				CLEAR_SEAWEED.matcher(messageString).matches() ||
+				CLEAR_MUSHROOM.matcher(messageString).matches() ||
+				CLEAR_BELLA.matcher(messageString).matches()) {
 			deletePatch(currentPatch);
 			FarmingPatches patch = FarmingPatches.fromPatchId(currentPatch);
 			if (patch != null) {
-				List<WorldPoint> needsCompost = patchOverlay.getNeedsCompostPoints();
-				if (!needsCompost.contains(patch.tile)) {
-					needsCompost.add(patch.tile);
-					patchOverlay.setNeedsCompostPoints(needsCompost);
-				}
+				patchOverlay.getNeedsCompostPoints().add(patch.getTile());
 			}
 		}
-
 	}
 
-	public void addPatch(int currentPatch)
+	private void addPatch(int currentPatch)
 	{
 		FarmingPatches newPatch = FarmingPatches.fromPatchId(currentPatch);
 
 		if(newPatch != null)
 		{
-			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
-			currentTiles.add(newPatch.tile);
-			patchOverlay.setWorldPoints(currentTiles);
-			
-			List<WorldPoint> needsCompost = patchOverlay.getNeedsCompostPoints();
-			needsCompost.remove(newPatch.tile);
-			patchOverlay.setNeedsCompostPoints(needsCompost);
-			
-			if(!savedPatches.contains(currentPatch)){
-				savedPatches.add(currentPatch);
-			}
+			patchOverlay.getWorldPoints().add(newPatch.getTile());
+			patchOverlay.getNeedsCompostPoints().remove(newPatch.getTile());
 		}
 	}
 
-	public void deletePatch(int currentPatch)
+	private void deletePatch(int currentPatch)
 	{
 		FarmingPatches oldPatch = FarmingPatches.fromPatchId(currentPatch);
 		if(oldPatch != null)
 		{
-			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
-			for(int i = 0; i < currentTiles.size(); i++)
-			{
-				if(currentTiles.get(i) == oldPatch.tile)
-				{
-					currentTiles.remove(i);
-				}
-			}
-			patchOverlay.setWorldPoints(currentTiles);
-			savedPatches.remove(Integer.valueOf(currentPatch));
+			patchOverlay.getWorldPoints().remove(oldPatch.getTile());
 		}
 	}
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		overlayManager.add(patchOverlay);
+		patchOverlay.updateImages();
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
+		currentPatch = 0;
 		overlayManager.remove(patchOverlay);
+		patchOverlay.reset();
 	}
 
 	@Provides
