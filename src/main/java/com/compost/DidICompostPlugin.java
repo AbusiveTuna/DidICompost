@@ -16,7 +16,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.runelite.api.MenuAction.GAME_OBJECT_FIFTH_OPTION;
@@ -30,9 +29,6 @@ public class DidICompostPlugin extends Plugin
 {
 	@Inject
 	private Client client;
-
-	@Inject
-	private DidICompostConfig config;
 
 	@Inject
 	private PatchOverlay patchOverlay;
@@ -164,14 +160,14 @@ public class DidICompostPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		overlayManager.add(patchOverlay);
 		patchOverlay.updateImages();
 	}
 
 	@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		currentPatch = 0;
 		overlayManager.remove(patchOverlay);
