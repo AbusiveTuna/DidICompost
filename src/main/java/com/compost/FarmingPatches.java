@@ -110,9 +110,9 @@ public enum FarmingPatches
     DRAYNOR_BELL(7572, new WorldPoint(3087,3354,0)),
     TAIBWO_CALQUAT(7807, new WorldPoint(2796,3100,0));
 
-    public final int patchId;
+    private final int patchId;
 
-    public final WorldPoint tile;
+    private final WorldPoint tile;
     private static final Map<Integer, FarmingPatches> PATCH_MAP = new HashMap<>();
 
     static {
