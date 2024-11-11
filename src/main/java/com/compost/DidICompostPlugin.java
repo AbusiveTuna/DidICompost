@@ -118,47 +118,23 @@ public class DidICompostPlugin extends Plugin
 	public void onChatMessage(ChatMessage message)
 	{
 		String messageString = message.getMessage();
-		String compostType = "";
-		Matcher matcher;
-		if((matcher = COMPOST_USED_ON_PATCH.matcher(messageString)).matches() ||
-				(matcher = FERTILE_SOIL_CAST.matcher(messageString)).find() ||
-				(matcher = ALREADY_TREATED.matcher(messageString)).matches() ||
-				(matcher = INSPECT_PATCH.matcher(messageString)).matches() )
-		{
-
-				String compostGroup = matcher.group("compostType");
-
-				switch(compostGroup){
-
-					case "ultra":
-						compostType = "ultra";
-						break;
-
-					case "super":
-						compostType = "super";
-						break;
-
-					default:
-						compostType = "compost";
-						break;
-				}
-
-		}
-
-		if(compostType.equals("ultra") || compostType.equals("super") || compostType.equals("compost"))
+		if (COMPOST_USED_ON_PATCH.matcher(messageString).matches() ||
+				FERTILE_SOIL_CAST.matcher(messageString).find() ||
+				ALREADY_TREATED.matcher(messageString).matches() ||
+				INSPECT_PATCH.matcher(messageString).matches())
 		{
 			addPatch(currentPatch);
+			return;
 		}
 
-		if((matcher = CLEAR_PATCH.matcher(messageString)).matches() ||
-				(matcher = CLEAR_HERB.matcher(messageString)).matches() ||
-				(matcher = CLEAR_TREE.matcher(messageString)).matches() ||
-				(matcher = INSPECT_PATCH_NONE.matcher(messageString)).matches() ||
-				(matcher = CLEAR_ALLOTMENT.matcher(messageString)).matches() ||
-				(matcher = CLEAR_SEAWEED.matcher(messageString)).matches() ||
-				(matcher = CLEAR_MUSHROOM.matcher(messageString)).matches() ||
-				(matcher = CLEAR_BELLA.matcher(messageString)).matches()){
-
+		if (CLEAR_PATCH.matcher(messageString).matches() ||
+				CLEAR_HERB.matcher(messageString).matches() ||
+				CLEAR_TREE.matcher(messageString).matches() ||
+				INSPECT_PATCH_NONE.matcher(messageString).matches() ||
+				CLEAR_ALLOTMENT.matcher(messageString).matches() ||
+				CLEAR_SEAWEED.matcher(messageString).matches() ||
+				CLEAR_MUSHROOM.matcher(messageString).matches() ||
+				CLEAR_BELLA.matcher(messageString).matches()) {
 			deletePatch(currentPatch);
 			FarmingPatches patch = FarmingPatches.fromPatchId(currentPatch);
 			if (patch != null) {
