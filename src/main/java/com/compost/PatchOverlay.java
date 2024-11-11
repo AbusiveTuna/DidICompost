@@ -2,22 +2,21 @@ package com.compost;
 
 import lombok.Getter;
 import net.runelite.api.Client;
-import net.runelite.api.Perspective;
-import net.runelite.api.Point;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.util.ImageUtil;
 
 import javax.inject.Inject;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 public class PatchOverlay extends Overlay
 {
@@ -44,114 +43,55 @@ public class PatchOverlay extends Overlay
     @Override
     public Dimension render(Graphics2D graphics)
     {
+        WorldView wv = client.getTopLevelWorldView();
+        if (wv == null)
+        {
+            return null;
+        }
+
+        BufferedImage bucketImage = getBucketImage();
         for (WorldPoint point : worldPoints)
         {
-            drawBucket(graphics, point);
+            drawImage(client, wv, point, graphics, bucketImage);
         }
 
         if (config.showNeedsCompost()) {
+            BufferedImage compostImage = getCompostImage();
             for (WorldPoint point : needsCompostPoints) {
-                drawNeedsCompost(graphics, point);
+                drawImage(client, wv, point, graphics, compostImage);
             }
         }
 
         return null;
     }
 
-    private void drawBucket(Graphics2D graphics, WorldPoint worldPoint)
+    private void drawImage(Client client, WorldView wv, WorldPoint worldPoint, Graphics2D graphics, BufferedImage image)
     {
-        if(worldPoint.getPlane() != client.getPlane())
+        LocalPoint lp = LocalPoint.fromWorld(wv, worldPoint);
+        if(lp != null)
         {
-            return;
+            OverlayUtil.renderImageLocation(client, graphics, lp, image, worldPoint.getPlane());
         }
+    }
 
-        LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
-        if(lp == null)
-        {
-            return;
-        }
-
-        Polygon poly = Perspective.getCanvasTilePoly(client,lp);
-        if(poly == null)
-        {
-            return;
-        }
-
-
+    private BufferedImage getBucketImage()
+    {
         BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
-        BufferedImage resizedImage = img;
-
-        if(config.iconSize() == CompostIconSize.LARGE) {
-            int newWidth = (int)(img.getWidth() * 1.3);
-            int newHeight = (int)(img.getHeight() * 1.3);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-        else if(config.iconSize() == CompostIconSize.SMALL) {
-            int newWidth = (int)(img.getWidth() * 0.7);
-            int newHeight = (int)(img.getHeight() * 0.7);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-
-        net.runelite.api.Point point = XYToPoint(worldPoint.getX(),worldPoint.getY(),worldPoint.getPlane());
-        graphics.drawImage(resizedImage, point.getX() , point.getY(), null);
+        return resize(img, config.iconSize());
     }
 
-    private BufferedImage resizeImage(BufferedImage originalImage, int newWidth, int newHeight) {
-        Image tmp = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-
-        return resizedImage;
-    }
-    private Point XYToPoint(int x, int y, int z)
-    {
-        LocalPoint localPoint = LocalPoint.fromWorld(client, x, y);
-
-        if (localPoint == null)
-        {
-            return null;
-        }
-
-        return Perspective.localToCanvas(
-                client,
-                new LocalPoint(localPoint.getX() - LOCAL_TILE_SIZE / 2, localPoint.getY() - LOCAL_TILE_SIZE / 2),
-                z);
-    }
-
-    private void drawNeedsCompost(Graphics2D graphics, WorldPoint worldPoint) {
-        if (worldPoint.getPlane() != client.getPlane()) {
-            return;
-        }
-
-        LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
-        if (lp == null) {
-            return;
-        }
-
-        Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-        if (poly == null) {
-            return;
-        }
-
+    private BufferedImage getCompostImage() {
         BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/icon-gray.png");
-        BufferedImage resizedImage = img;
+        return resize(img, config.iconSize());
+    }
 
-        if(config.iconSize() == CompostIconSize.LARGE) {
-            int newWidth = (int)(img.getWidth() * 1.3);
-            int newHeight = (int)(img.getHeight() * 1.3);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-        else if(config.iconSize() == CompostIconSize.SMALL) {
-            int newWidth = (int)(img.getWidth() * 0.7);
-            int newHeight = (int)(img.getHeight() * 0.7);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-
-        net.runelite.api.Point point = XYToPoint(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane());
-        graphics.drawImage(resizedImage, point.getX(), point.getY(), null);
+    private static BufferedImage resize(BufferedImage img, CompostIconSize iconSize)
+    {
+        if (iconSize == CompostIconSize.MEDIUM) return img;
+        double multiplier = iconSize == CompostIconSize.LARGE ? 1.3 : 0.7;
+        int newWidth = (int) (img.getWidth() * multiplier);
+        int newHeight = (int) (img.getHeight() * multiplier);
+        return ImageUtil.resizeImage(img, newWidth, newHeight);
     }
 
 }
