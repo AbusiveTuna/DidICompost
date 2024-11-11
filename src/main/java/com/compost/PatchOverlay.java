@@ -1,30 +1,23 @@
 package com.compost;
 
+import lombok.Getter;
+import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.Client;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.ImageUtil;
 
-import java.awt.Color;
-
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
-
 
 public class PatchOverlay extends Overlay
 {
@@ -32,27 +25,11 @@ public class PatchOverlay extends Overlay
     private final DidICompostPlugin plugin;
     private final DidICompostConfig config;
 
-    public List<WorldPoint> getWorldPoints()
-    {
-        return worldPoints;
-    }
+    @Getter
+    private final Set<WorldPoint> worldPoints = new CopyOnWriteArraySet<>();
 
-    public void setWorldPoints(List<WorldPoint> worldPoints)
-    {
-        this.worldPoints = worldPoints;
-    }
-
-    public List<WorldPoint> worldPoints = new ArrayList<WorldPoint>();
-
-    private List<WorldPoint> needsCompostPoints = new ArrayList<>();
-
-    public List<WorldPoint> getNeedsCompostPoints() {
-        return needsCompostPoints;
-    }
-
-    public void setNeedsCompostPoints(List<WorldPoint> points) {
-        this.needsCompostPoints = points;
-    }
+    @Getter
+    private final Set<WorldPoint> needsCompostPoints = new CopyOnWriteArraySet<>();
 
     @Inject
     private PatchOverlay(Client client, DidICompostConfig config, DidICompostPlugin plugin)
@@ -67,30 +44,21 @@ public class PatchOverlay extends Overlay
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        for(int i = 0; i < worldPoints.size(); i++)
+        for (WorldPoint point : worldPoints)
         {
-            try
-            {
-                drawBucket(graphics,worldPoints.get(i));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            drawBucket(graphics, point);
         }
 
         if (config.showNeedsCompost()) {
             for (WorldPoint point : needsCompostPoints) {
-                try {
-                    drawNeedsCompost(graphics, point);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                drawNeedsCompost(graphics, point);
             }
         }
 
         return null;
     }
 
-    private void drawBucket(Graphics2D graphics, WorldPoint worldPoint) throws IOException
+    private void drawBucket(Graphics2D graphics, WorldPoint worldPoint)
     {
         if(worldPoint.getPlane() != client.getPlane())
         {
@@ -153,7 +121,7 @@ public class PatchOverlay extends Overlay
                 z);
     }
 
-    private void drawNeedsCompost(Graphics2D graphics, WorldPoint worldPoint) throws IOException {
+    private void drawNeedsCompost(Graphics2D graphics, WorldPoint worldPoint) {
         if (worldPoint.getPlane() != client.getPlane()) {
             return;
         }

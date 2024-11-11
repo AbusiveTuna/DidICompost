@@ -5,7 +5,6 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.ComponentID;
@@ -15,10 +14,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.RuneLite;
 
 import java.util.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -43,8 +40,6 @@ public class DidICompostPlugin extends Plugin
 
 	@Inject
 	private OverlayManager overlayManager;
-
-	private ArrayList<Integer> savedPatches = new ArrayList<>();
 
 	private static final Pattern COMPOST_USED_ON_PATCH = Pattern.compile(
 			"You treat the .+ with (?<compostType>ultra|super|)compost\\.");
@@ -159,14 +154,9 @@ public class DidICompostPlugin extends Plugin
 			deletePatch(currentPatch);
 			FarmingPatches patch = FarmingPatches.fromPatchId(currentPatch);
 			if (patch != null) {
-				List<WorldPoint> needsCompost = patchOverlay.getNeedsCompostPoints();
-				if (!needsCompost.contains(patch.tile)) {
-					needsCompost.add(patch.tile);
-					patchOverlay.setNeedsCompostPoints(needsCompost);
-				}
+				patchOverlay.getNeedsCompostPoints().add(patch.getTile());
 			}
 		}
-
 	}
 
 	public void addPatch(int currentPatch)
@@ -175,17 +165,8 @@ public class DidICompostPlugin extends Plugin
 
 		if(newPatch != null)
 		{
-			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
-			currentTiles.add(newPatch.tile);
-			patchOverlay.setWorldPoints(currentTiles);
-			
-			List<WorldPoint> needsCompost = patchOverlay.getNeedsCompostPoints();
-			needsCompost.remove(newPatch.tile);
-			patchOverlay.setNeedsCompostPoints(needsCompost);
-			
-			if(!savedPatches.contains(currentPatch)){
-				savedPatches.add(currentPatch);
-			}
+			patchOverlay.getWorldPoints().add(newPatch.getTile());
+			patchOverlay.getNeedsCompostPoints().remove(newPatch.getTile());
 		}
 	}
 
@@ -194,16 +175,7 @@ public class DidICompostPlugin extends Plugin
 		FarmingPatches oldPatch = FarmingPatches.fromPatchId(currentPatch);
 		if(oldPatch != null)
 		{
-			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
-			for(int i = 0; i < currentTiles.size(); i++)
-			{
-				if(currentTiles.get(i) == oldPatch.tile)
-				{
-					currentTiles.remove(i);
-				}
-			}
-			patchOverlay.setWorldPoints(currentTiles);
-			savedPatches.remove(Integer.valueOf(currentPatch));
+			patchOverlay.getWorldPoints().remove(oldPatch.getTile());
 		}
 	}
 

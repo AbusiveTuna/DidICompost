@@ -1,11 +1,13 @@
 package com.compost;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.coords.WorldPoint;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @RequiredArgsConstructor
 public enum FarmingPatches
 {
