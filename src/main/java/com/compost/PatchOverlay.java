@@ -23,8 +23,10 @@ public class PatchOverlay extends Overlay
     private static final BufferedImage COMPOST_IMG = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
     private static final BufferedImage GRAY_IMG = ImageUtil.loadImageResource(DidICompostPlugin.class, "/icon-gray.png");
 
+    private BufferedImage resizedCompostImage = COMPOST_IMG;
+    private BufferedImage resizedGrayImage = GRAY_IMG;
+
     private final Client client;
-    private final DidICompostPlugin plugin;
     private final DidICompostConfig config;
 
     @Getter
@@ -34,13 +36,25 @@ public class PatchOverlay extends Overlay
     private final Set<WorldPoint> needsCompostPoints = new CopyOnWriteArraySet<>();
 
     @Inject
-    private PatchOverlay(Client client, DidICompostConfig config, DidICompostPlugin plugin)
+    PatchOverlay(Client client, DidICompostConfig config)
     {
         this.client = client;
         this.config = config;
-        this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
+    }
+
+    public void updateImages()
+    {
+        CompostIconSize iconSize = config.iconSize();
+        this.resizedCompostImage = resize(COMPOST_IMG, iconSize);
+        this.resizedGrayImage = resize(GRAY_IMG, iconSize);
+    }
+
+    public void resetImages()
+    {
+        this.resizedCompostImage = COMPOST_IMG;
+        this.resizedGrayImage = GRAY_IMG;
     }
 
     @Override
@@ -52,17 +66,14 @@ public class PatchOverlay extends Overlay
             return null;
         }
 
-        CompostIconSize iconSize = config.iconSize();
-        BufferedImage bucketImage = resize(COMPOST_IMG, iconSize);
         for (WorldPoint point : worldPoints)
         {
-            drawImage(client, wv, point, graphics, bucketImage);
+            drawImage(client, wv, point, graphics, resizedCompostImage);
         }
 
         if (config.showNeedsCompost()) {
-            BufferedImage compostImage = resize(GRAY_IMG, iconSize);
             for (WorldPoint point : needsCompostPoints) {
-                drawImage(client, wv, point, graphics, compostImage);
+                drawImage(client, wv, point, graphics, resizedGrayImage);
             }
         }
 
