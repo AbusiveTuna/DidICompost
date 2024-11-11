@@ -51,10 +51,12 @@ public class PatchOverlay extends Overlay
         this.resizedGrayImage = resize(GRAY_IMG, iconSize);
     }
 
-    public void resetImages()
+    public void reset()
     {
         this.resizedCompostImage = COMPOST_IMG;
         this.resizedGrayImage = GRAY_IMG;
+        this.worldPoints.clear();
+        this.needsCompostPoints.clear();
     }
 
     @Override
