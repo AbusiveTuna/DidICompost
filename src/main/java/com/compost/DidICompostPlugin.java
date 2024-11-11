@@ -15,7 +15,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
-import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,9 +65,8 @@ public class DidICompostPlugin extends Plugin
 			ItemID.ULTRACOMPOST,
 			ItemID.BOTTOMLESS_COMPOST_BUCKET_22997
 	);
-	private static final Collection<Integer> compostIds = Set.of(ItemID.COMPOST, ItemID.SUPERCOMPOST, ItemID.ULTRACOMPOST, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997);
 
-	int currentPatch = 0;
+	private int currentPatch = 0;
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
@@ -79,7 +77,7 @@ public class DidICompostPlugin extends Plugin
 		{
 			Widget w = client.getSelectedWidget();
 			if(w != null){
-				isCompost = w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL || compostIds.contains(w.getItemId());
+				isCompost = w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL || COMPOST_ITEMS.contains(w.getItemId());
 			}
 		}
 		if(action == GAME_OBJECT_FIFTH_OPTION)
