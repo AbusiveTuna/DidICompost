@@ -1,189 +1,103 @@
 package com.compost;
 
-import net.runelite.api.Perspective;
-import net.runelite.api.Point;
+import lombok.Getter;
+import net.runelite.api.Client;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.Client;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.util.ImageUtil;
 
-import java.awt.Color;
-
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
-import java.awt.*;
-import java.awt.geom.GeneralPath;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
-
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class PatchOverlay extends Overlay
 {
+    private static final BufferedImage COMPOST_IMG = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
+    private static final BufferedImage GRAY_IMG = ImageUtil.loadImageResource(DidICompostPlugin.class, "/icon-gray.png");
+
+    private BufferedImage resizedCompostImage = COMPOST_IMG;
+    private BufferedImage resizedGrayImage = GRAY_IMG;
+
     private final Client client;
-    private final DidICompostPlugin plugin;
     private final DidICompostConfig config;
 
-    public List<WorldPoint> getWorldPoints()
-    {
-        return worldPoints;
-    }
+    @Getter
+    private final Set<WorldPoint> worldPoints = new CopyOnWriteArraySet<>();
 
-    public void setWorldPoints(List<WorldPoint> worldPoints)
-    {
-        this.worldPoints = worldPoints;
-    }
-
-    public List<WorldPoint> worldPoints = new ArrayList<WorldPoint>();
-
-    private List<WorldPoint> needsCompostPoints = new ArrayList<>();
-
-    public List<WorldPoint> getNeedsCompostPoints() {
-        return needsCompostPoints;
-    }
-
-    public void setNeedsCompostPoints(List<WorldPoint> points) {
-        this.needsCompostPoints = points;
-    }
+    @Getter
+    private final Set<WorldPoint> needsCompostPoints = new CopyOnWriteArraySet<>();
 
     @Inject
-    private PatchOverlay(Client client, DidICompostConfig config, DidICompostPlugin plugin)
+    PatchOverlay(Client client, DidICompostConfig config)
     {
         this.client = client;
         this.config = config;
-        this.plugin = plugin;
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
+    }
+
+    public void updateImages()
+    {
+        CompostIconSize iconSize = config.iconSize();
+        this.resizedCompostImage = resize(COMPOST_IMG, iconSize);
+        this.resizedGrayImage = resize(GRAY_IMG, iconSize);
+    }
+
+    public void reset()
+    {
+        this.resizedCompostImage = COMPOST_IMG;
+        this.resizedGrayImage = GRAY_IMG;
+        this.worldPoints.clear();
+        this.needsCompostPoints.clear();
     }
 
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        for(int i = 0; i < worldPoints.size(); i++)
+        WorldView wv = client.getTopLevelWorldView();
+        if (wv == null)
         {
-            try
-            {
-                drawBucket(graphics,worldPoints.get(i));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return null;
+        }
+
+        for (WorldPoint point : worldPoints)
+        {
+            drawImage(client, wv, point, graphics, resizedCompostImage);
         }
 
         if (config.showNeedsCompost()) {
             for (WorldPoint point : needsCompostPoints) {
-                try {
-                    drawNeedsCompost(graphics, point);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                drawImage(client, wv, point, graphics, resizedGrayImage);
             }
         }
 
         return null;
     }
 
-    private void drawBucket(Graphics2D graphics, WorldPoint worldPoint) throws IOException
+    private void drawImage(Client client, WorldView wv, WorldPoint worldPoint, Graphics2D graphics, BufferedImage image)
     {
-        if(worldPoint.getPlane() != client.getPlane())
+        LocalPoint lp = LocalPoint.fromWorld(wv, worldPoint);
+        if(lp != null)
         {
-            return;
+            OverlayUtil.renderImageLocation(client, graphics, lp, image, worldPoint.getPlane());
         }
-
-        LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
-        if(lp == null)
-        {
-            return;
-        }
-
-        Polygon poly = Perspective.getCanvasTilePoly(client,lp);
-        if(poly == null)
-        {
-            return;
-        }
-
-
-        BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/Bottomless_compost_bucket.png");
-        BufferedImage resizedImage = img;
-
-        if(config.iconSize() == CompostIconSize.LARGE) {
-            int newWidth = (int)(img.getWidth() * 1.3);
-            int newHeight = (int)(img.getHeight() * 1.3);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-        else if(config.iconSize() == CompostIconSize.SMALL) {
-            int newWidth = (int)(img.getWidth() * 0.7);
-            int newHeight = (int)(img.getHeight() * 0.7);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-
-        net.runelite.api.Point point = XYToPoint(worldPoint.getX(),worldPoint.getY(),worldPoint.getPlane());
-        graphics.drawImage(resizedImage, point.getX() , point.getY(), null);
     }
 
-    private BufferedImage resizeImage(BufferedImage originalImage, int newWidth, int newHeight) {
-        Image tmp = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-
-        return resizedImage;
-    }
-    private Point XYToPoint(int x, int y, int z)
+    private static BufferedImage resize(BufferedImage img, CompostIconSize iconSize)
     {
-        LocalPoint localPoint = LocalPoint.fromWorld(client, x, y);
-
-        if (localPoint == null)
-        {
-            return null;
-        }
-
-        return Perspective.localToCanvas(
-                client,
-                new LocalPoint(localPoint.getX() - LOCAL_TILE_SIZE / 2, localPoint.getY() - LOCAL_TILE_SIZE / 2),
-                z);
-    }
-
-    private void drawNeedsCompost(Graphics2D graphics, WorldPoint worldPoint) throws IOException {
-        if (worldPoint.getPlane() != client.getPlane()) {
-            return;
-        }
-
-        LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
-        if (lp == null) {
-            return;
-        }
-
-        Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-        if (poly == null) {
-            return;
-        }
-
-        BufferedImage img = ImageUtil.loadImageResource(DidICompostPlugin.class, "/icon-gray.png");
-        BufferedImage resizedImage = img;
-
-        if(config.iconSize() == CompostIconSize.LARGE) {
-            int newWidth = (int)(img.getWidth() * 1.3);
-            int newHeight = (int)(img.getHeight() * 1.3);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-        else if(config.iconSize() == CompostIconSize.SMALL) {
-            int newWidth = (int)(img.getWidth() * 0.7);
-            int newHeight = (int)(img.getHeight() * 0.7);
-            resizedImage = resizeImage(img, newWidth, newHeight);
-        }
-
-        net.runelite.api.Point point = XYToPoint(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane());
-        graphics.drawImage(resizedImage, point.getX(), point.getY(), null);
+        if (iconSize == CompostIconSize.MEDIUM) return img;
+        double multiplier = iconSize == CompostIconSize.LARGE ? 1.3 : 0.7;
+        int newWidth = (int) (img.getWidth() * multiplier);
+        int newHeight = (int) (img.getHeight() * multiplier);
+        return ImageUtil.resizeImage(img, newWidth, newHeight);
     }
 
 }
