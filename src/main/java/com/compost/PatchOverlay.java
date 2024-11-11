@@ -34,12 +34,12 @@ public class PatchOverlay extends Overlay
 
     public List<WorldPoint> getWorldPoints()
     {
-        return worldPoints;
+        return new ArrayList<>(worldPoints);
     }
 
     public void setWorldPoints(List<WorldPoint> worldPoints)
     {
-        this.worldPoints = worldPoints;
+        this.worldPoints = new ArrayList<>(worldPoints);
     }
 
     public List<WorldPoint> worldPoints = new ArrayList<WorldPoint>();
@@ -47,11 +47,11 @@ public class PatchOverlay extends Overlay
     private List<WorldPoint> needsCompostPoints = new ArrayList<>();
 
     public List<WorldPoint> getNeedsCompostPoints() {
-        return needsCompostPoints;
+        return new ArrayList<>(needsCompostPoints);
     }
 
     public void setNeedsCompostPoints(List<WorldPoint> points) {
-        this.needsCompostPoints = points;
+        this.needsCompostPoints = new ArrayList<>(points);
     }
 
     @Inject

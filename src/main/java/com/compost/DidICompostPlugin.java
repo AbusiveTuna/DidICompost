@@ -195,13 +195,7 @@ public class DidICompostPlugin extends Plugin
 		if(oldPatch != null)
 		{
 			List<WorldPoint> currentTiles = patchOverlay.getWorldPoints();
-			for(int i = 0; i < currentTiles.size(); i++)
-			{
-				if(currentTiles.get(i) == oldPatch.tile)
-				{
-					currentTiles.remove(i);
-				}
-			}
+			currentTiles.removeIf(tile -> tile.equals(oldPatch.tile));
 			patchOverlay.setWorldPoints(currentTiles);
 			savedPatches.remove(Integer.valueOf(currentPatch));
 		}
@@ -217,6 +211,11 @@ public class DidICompostPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(patchOverlay);
+		
+		// Clear state
+		savedPatches.clear();
+		patchOverlay.setWorldPoints(new ArrayList<>());
+		patchOverlay.setNeedsCompostPoints(new ArrayList<>());
 	}
 
 	@Provides
