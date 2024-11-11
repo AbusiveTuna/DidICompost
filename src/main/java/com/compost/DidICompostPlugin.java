@@ -183,6 +183,9 @@ public class DidICompostPlugin extends Plugin
 	@Override
 	protected void shutDown() throws Exception
 	{
+		currentPatch = 0;
+		patchOverlay.getWorldPoints().clear();
+		patchOverlay.getNeedsCompostPoints().clear();
 		overlayManager.remove(patchOverlay);
 	}
 
