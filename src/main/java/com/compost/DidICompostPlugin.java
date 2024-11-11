@@ -82,25 +82,6 @@ public class DidICompostPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
 	{
-		boolean isCompost = false;
-		MenuAction action = menuClicked.getMenuAction();
-		if(action == WIDGET_TARGET_ON_GAME_OBJECT)
-		{
-			Widget w = client.getSelectedWidget();
-			if(w != null){
-				isCompost = w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL || COMPOST_ITEMS.contains(w.getItemId());
-			}
-		}
-		if(action == GAME_OBJECT_FIFTH_OPTION)
-		{
-			isCompost = "Inspect".equals(menuClicked.getMenuOption());
-		}
-
-		if (!isCompost)
-		{
-			return;
-		}
-
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
 		//avoids swapping the id to random objects
 		FarmingPatches patch = FarmingPatches.fromPatchId(patchDef.getId());
