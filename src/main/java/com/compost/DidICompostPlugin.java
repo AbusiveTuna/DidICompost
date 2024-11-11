@@ -67,32 +67,30 @@ public class DidICompostPlugin extends Plugin
 			ItemID.ULTRACOMPOST,
 			ItemID.BOTTOMLESS_COMPOST_BUCKET_22997
 	);
-	private static final ArrayList<Integer> compostIds = new ArrayList<>(Arrays.asList(ItemID.COMPOST, ItemID.SUPERCOMPOST, ItemID.ULTRACOMPOST, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997));
+	private static final Collection<Integer> compostIds = Set.of(ItemID.COMPOST, ItemID.SUPERCOMPOST, ItemID.ULTRACOMPOST, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997);
 
 	int currentPatch = 0;
+
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuClicked)
 	{
-		Boolean isCompost = false;
+		boolean isCompost = false;
 		MenuAction action = menuClicked.getMenuAction();
 		if(action == WIDGET_TARGET_ON_GAME_OBJECT)
 		{
 			Widget w = client.getSelectedWidget();
 			if(w != null){
-				if(compostIds.contains(w.getItemId()))
-				{
-					isCompost = true;
-				}
-
-				if(w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL){
-					isCompost = true;
-				}
-
+				isCompost = w.getId() == ComponentID.SPELLBOOK_FERTILE_SOIL || compostIds.contains(w.getItemId());
 			}
 		}
 		if(action == GAME_OBJECT_FIFTH_OPTION)
 		{
-				isCompost = "Inspect".equals(menuClicked.getMenuOption());
+			isCompost = "Inspect".equals(menuClicked.getMenuOption());
+		}
+
+		if (!isCompost)
+		{
+			return;
 		}
 
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
@@ -106,6 +104,7 @@ public class DidICompostPlugin extends Plugin
 		}
 
 	}
+
 	@Subscribe
 	public void onChatMessage(ChatMessage message)
 	{
