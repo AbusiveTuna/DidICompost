@@ -18,7 +18,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 import static net.runelite.api.MenuAction.GAME_OBJECT_FIFTH_OPTION;
 import static net.runelite.api.MenuAction.WIDGET_TARGET_ON_GAME_OBJECT;
@@ -95,14 +94,11 @@ public class DidICompostPlugin extends Plugin
 
 		ObjectComposition patchDef = client.getObjectDefinition(menuClicked.getId());
 		//avoids swapping the id to random objects
-		for(int i = 0; i < FarmingPatches.values().length; i++)
+		FarmingPatches patch = FarmingPatches.fromPatchId(patchDef.getId());
+		if (patch != null)
 		{
-			if(FarmingPatches.values()[i].patchId == patchDef.getId())
-			{
-				currentPatch = patchDef.getId();
-			}
+			currentPatch = patch.getPatchId();
 		}
-
 	}
 
 	@Subscribe
