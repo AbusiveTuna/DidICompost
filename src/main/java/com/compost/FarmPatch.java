@@ -8,7 +8,6 @@ public class FarmPatch
 {
 
     public String farmPatch = "";
-
     public String compostType = "";
     public boolean didICompost = false;
     private static ArrayList<WorldPoint> compostIconTiles = new ArrayList<>();
@@ -19,6 +18,5 @@ public class FarmPatch
         didICompost = composted;
         compostIconTiles = tiles;
         compostType = compost;
-
     }
 }
