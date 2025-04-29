@@ -36,10 +36,10 @@ public enum FarmingPatches
     HOSIDIUS_FLOWER(27111, new WorldPoint(1735,3554,0)),
     HOSIDIUS_HERB(27115, new WorldPoint(1738,3551,0)),
 
-    VALAMORE_ALLOTMENT_NORTH(50696, new WorldPoint(1582,3100,0)),
-    VALAMORE_ALLOTMENT_SOUTH(50695, new WorldPoint(1586,3095,0)),
-    VALAMORE_FLOWER(50693, new WorldPoint(1585,3098,0)),
-    VALAMORE_HERB(50697, new WorldPoint(1582,3095,0)),
+    VARLAMORE_ALLOTMENT_NORTH(50696, new WorldPoint(1582,3100,0)),
+    VARLAMORE_ALLOTMENT_SOUTH(50695, new WorldPoint(1586,3095,0)),
+    VARLAMORE_FLOWER(50693, new WorldPoint(1585,3098,0)),
+    VARLAMORE_HERB(50697, new WorldPoint(1582,3095,0)),
 
     HARMONY_HERB(9372, new WorldPoint(3790,2838,0)),
     HARMONY_ALLOTMENT(21950, new WorldPoint(3794,2837,0)),
@@ -56,11 +56,12 @@ public enum FarmingPatches
     TROLL_HERB(18816, new WorldPoint(2827,3694,0)),
     WEISS_HERB(33176, new WorldPoint(2848,3935,0)),
 
-    //hops
+    //Hops
     CHAMPION_GUILD_HOP(8175, new WorldPoint(3231,3317,0)),
     MCGRUBOR_HOP(8176, new WorldPoint(2669,3523,0)),
     YANILLE_HOP(8173, new WorldPoint(2577,3106,0)),
     ENTRANA_HOP(8174, new WorldPoint(2812,3338,0)),
+    VARLAMORE_HOP(55341, new WorldPoint(1366,2940,0)),
 
     //Bushes
     FARMING_GUILD_BUSH(34006, new WorldPoint(1260,3733,0)),
@@ -69,21 +70,23 @@ public enum FarmingPatches
     ARDY_BUSH(7580, new WorldPoint(2617,3226,0)),
     ETCETERA_BUSH(7579, new WorldPoint(2592,3863,0)),
 
-    //trees
+    //Trees
     FALLY_TREE(8389, new WorldPoint(3003,3374,0)),
     TALVERY_TREE(8388, new WorldPoint(2935,3439,0)),
     FARMING_GUILD_TREE(33732, new WorldPoint(1233,3735,0)),
     LUMBRIDGE_TREE(8391, new WorldPoint(3194,3232,0)),
     VARROCK_TREE(8390, new WorldPoint(3228,3458,0)),
     GNOME_STRONGHOLD_TREE(19147, new WorldPoint(2437,3416,0)),
-    //fruit trees
+
+    //Fruit trees
     CATHERBY_FRUIT(7965, new WorldPoint(2860,3433,0)),
     FARMING_GUILD_FRUIT(34007, new WorldPoint(1243,3758,0)),
     GNOME_STRONGHOLD_FRUIT(7962, new WorldPoint(2475,3446,0)),
     GNOME_VILLIAGE_FRUIT(7963, new WorldPoint(2490,3180,0)),
     BRIMHAVEN_FRUIT(7964, new WorldPoint(2765,3212,0)),
     LLETYA_FRUIT(26579, new WorldPoint(2346,3162,0)),
-    //spirit trees
+
+    //Spirit trees
     FARMING_GUILD_SPIRIT(33733, new WorldPoint(1252,3751,0)),
     ETCETERA_SPIRIT(8382, new WorldPoint(2612,3857,0)),
     PORT_SARIM_SPIRIT(8338, new WorldPoint(3059,3257,0)),
@@ -98,9 +101,9 @@ public enum FarmingPatches
     HARDWOOD_WEST(30481, new WorldPoint(3703,3836,0)),
     HARDWOOD_SOUTH(30480, new WorldPoint(3707,3834,0)),
     HARDWOOD_EAST(30482, new WorldPoint(3714,3836,0)),
-    VALAMORE_HARDWOOD(50692, new WorldPoint(1687,2973,0)),
+    VARLAMORE_HARDWOOD(50692, new WorldPoint(1687,2973,0)),
 
-    //special
+    //Special
     ALKHARID_CACTUS(7771, new WorldPoint(3315,3203,0)),
     FARMING_GUILD_CACTUS(33761, new WorldPoint(1264,3747,0)),
     FARMING_GUILD_CELSTRUS(34629, new WorldPoint(1245,3751,0)),
@@ -111,8 +114,8 @@ public enum FarmingPatches
     TAIBWO_CALQUAT(7807, new WorldPoint(2796,3100,0));
 
     private final int patchId;
-
     private final WorldPoint tile;
+
     private static final Map<Integer, FarmingPatches> PATCH_MAP = new HashMap<>();
 
     static {
@@ -124,5 +127,4 @@ public enum FarmingPatches
     public static FarmingPatches fromPatchId(int itemId) {
         return PATCH_MAP.get(itemId);
     }
-
 }
