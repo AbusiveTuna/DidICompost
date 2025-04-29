@@ -99,5 +99,4 @@ public class PatchOverlay extends Overlay
         int newHeight = (int) (img.getHeight() * multiplier);
         return ImageUtil.resizeImage(img, newWidth, newHeight);
     }
-
 }
