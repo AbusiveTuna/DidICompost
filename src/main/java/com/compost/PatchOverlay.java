@@ -68,14 +68,15 @@ public class PatchOverlay extends Overlay
             return null;
         }
 
-        for (WorldPoint point : worldPoints)
-        {
-            drawImage(client, wv, point, graphics, resizedCompostImage);
-        }
-
         if (config.showNeedsCompost()) {
             for (WorldPoint point : needsCompostPoints) {
                 drawImage(client, wv, point, graphics, resizedGrayImage);
+            }
+        }
+
+        if (config.showAppliedCompost()) {
+            for (WorldPoint point : worldPoints) {
+                drawImage(client, wv, point, graphics, resizedCompostImage);
             }
         }
 

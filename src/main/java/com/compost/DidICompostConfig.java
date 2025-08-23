@@ -28,4 +28,15 @@ public interface DidICompostConfig extends Config
     {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "showAppliedCompost",
+            name = "Show Applied Compost",
+            description = "Shows icon over patches that already have compost applied",
+            position = 3
+    )
+    default boolean showAppliedCompost()
+    {
+        return false;
+    }
 }
