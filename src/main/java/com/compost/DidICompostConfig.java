@@ -37,6 +37,6 @@ public interface DidICompostConfig extends Config
     )
     default boolean showAppliedCompost()
     {
-        return false;
+        return true;
     }
 }
