@@ -49,11 +49,12 @@ public class DidICompostPlugin extends Plugin
 			"This is an? .+\\. The soil has not been treated.*");
 
 	private static final Pattern CLEAR_HERB = Pattern.compile("The herb patch is now empty.*");
+	private static final Pattern CLEAR_HOP = Pattern.compile("The hops patch is now empty.*");
 	private static final Pattern CLEAR_PATCH = Pattern.compile("You have successfully cleared this patch for new crops.*");
-	private static final Pattern CLEAR_TREE = Pattern.compile("You examine the tree for signs of disease and find that it is in perfect health.*");
+	private static final Pattern CLEAR_TREE = Pattern.compile("You examine the .* for signs of disease and find that it is in perfect health.*");
 	private static final Pattern CLEAR_ALLOTMENT = Pattern.compile("The allotment is now empty.*");
 	private static final Pattern CLEAR_SEAWEED = Pattern.compile("You pick some giant seaweed.*");
-	private static final Pattern CLEAR_BELLA = Pattern.compile("You pick some deadly nightshade.*");
+	private static final Pattern CLEAR_BELLA = Pattern.compile("You pick some Deadly Nightshade.*");
 	private static final Pattern CLEAR_MUSHROOM = Pattern.compile("You pick a Bittercap mushroom.*");
 	
 	private static final ImmutableSet<Integer> COMPOST_ITEMS = ImmutableSet.of(
@@ -94,6 +95,10 @@ public class DidICompostPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage message)
 	{
+		if (message.getType() != ChatMessageType.SPAM && message.getType() != ChatMessageType.GAMEMESSAGE) {
+			return;
+		}
+
 		String messageString = message.getMessage();
 		if (COMPOST_USED_ON_PATCH.matcher(messageString).matches() ||
 				FERTILE_SOIL_CAST.matcher(messageString).find() ||
@@ -106,6 +111,7 @@ public class DidICompostPlugin extends Plugin
 
 		if (CLEAR_PATCH.matcher(messageString).matches() ||
 				CLEAR_HERB.matcher(messageString).matches() ||
+				CLEAR_HOP.matcher(messageString).matches() ||
 				CLEAR_TREE.matcher(messageString).matches() ||
 				INSPECT_PATCH_NONE.matcher(messageString).matches() ||
 				CLEAR_ALLOTMENT.matcher(messageString).matches() ||
