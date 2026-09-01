@@ -56,6 +56,9 @@ public enum FarmingPatches
     TROLL_HERB(18816, new WorldPoint(2827,3694,0)),
     WEISS_HERB(33176, new WorldPoint(2848,3935,0)),
 
+    //Flowers
+    VARLAMORE_KASTORI_FLOWER(56959, new WorldPoint(1352, 3022, 0)),
+
     //Hops
     CHAMPION_GUILD_HOP(8175, new WorldPoint(3231,3317,0)),
     MCGRUBOR_HOP(8176, new WorldPoint(2669,3523,0)),
@@ -104,6 +107,7 @@ public enum FarmingPatches
     HARDWOOD_SOUTH(30480, new WorldPoint(3707,3834,0)),
     HARDWOOD_EAST(30482, new WorldPoint(3714,3836,0)),
     VARLAMORE_HARDWOOD(50692, new WorldPoint(1687,2973,0)),
+    ANGLERS_RETREAT_HARDWOOD(58834, new WorldPoint(2470, 2702, 0)),
 
     //Special
     ALKHARID_CACTUS(7771, new WorldPoint(3315,3203,0)),
@@ -115,7 +119,8 @@ public enum FarmingPatches
     AUBURNVALE_BELL(56960, new WorldPoint(1450,3353,0)),
     DRAYNOR_BELL(7572, new WorldPoint(3087,3354,0)),
     VALAMORE_CALQUAT(56954, new WorldPoint(1366,3031,0)),
-    TAIBWO_CALQUAT(7807, new WorldPoint(2796,3100,0));
+    TAIBWO_CALQUAT(7807, new WorldPoint(2796,3100,0)),
+    GREAT_CONCH_CALQUAT(58675, new WorldPoint(3127, 2404, 0));
 
     private final int patchId;
     private final WorldPoint tile;
