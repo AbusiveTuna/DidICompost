@@ -21,7 +21,7 @@ public interface DidICompostConfig extends Config
     @ConfigItem(
             keyName = "showNeedsCompost",
             name = "Show Needs Compost",
-            description = "Shows text over empty patches that need composting",
+            description = "Shows an icon over patches that have no compost applied",
             position = 2
     )
     default boolean showNeedsCompost()
