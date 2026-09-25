@@ -52,7 +52,7 @@ public class PatchOverlay extends Overlay
     public Dimension render(Graphics2D graphics)
     {
         WorldView wv = client.getTopLevelWorldView();
-        if (wv == null)
+        if (wv == null || !config.displayMode().isIcon())
         {
             return null;
         }
