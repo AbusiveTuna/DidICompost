@@ -1,6 +1,5 @@
 package com.compost;
 
-import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.WorldView;
 import net.runelite.api.coords.LocalPoint;
@@ -15,8 +14,6 @@ import javax.inject.Inject;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class PatchOverlay extends Overlay
 {
@@ -28,12 +25,6 @@ public class PatchOverlay extends Overlay
 
     private final Client client;
     private final DidICompostConfig config;
-
-    @Getter
-    private final Set<WorldPoint> worldPoints = new CopyOnWriteArraySet<>();
-
-    @Getter
-    private final Set<WorldPoint> needsCompostPoints = new CopyOnWriteArraySet<>();
 
     @Inject
     PatchOverlay(Client client, DidICompostConfig config)
@@ -55,8 +46,6 @@ public class PatchOverlay extends Overlay
     {
         this.resizedCompostImage = COMPOST_IMG;
         this.resizedGrayImage = GRAY_IMG;
-        this.worldPoints.clear();
-        this.needsCompostPoints.clear();
     }
 
     @Override
@@ -68,28 +57,37 @@ public class PatchOverlay extends Overlay
             return null;
         }
 
-        if (config.showNeedsCompost()) {
-            for (WorldPoint point : needsCompostPoints) {
-                drawImage(client, wv, point, graphics, resizedGrayImage);
+        for (FarmingPatches patch : FarmingPatches.values())
+        {
+            WorldPoint tile = patch.getTile();
+            if (tile.getPlane() != wv.getPlane())
+            {
+                continue;
             }
-        }
 
-        if (config.showAppliedCompost()) {
-            for (WorldPoint point : worldPoints) {
-                drawImage(client, wv, point, graphics, resizedCompostImage);
+            LocalPoint lp = LocalPoint.fromWorld(wv, tile);
+            if (lp == null)
+            {
+                continue;
+            }
+
+            BufferedImage image;
+            if (client.getVarbitValue(patch.getCompostVarbit()) != 0)
+            {
+                image = config.showAppliedCompost() ? resizedCompostImage : null;
+            }
+            else
+            {
+                image = config.showNeedsCompost() ? resizedGrayImage : null;
+            }
+
+            if (image != null)
+            {
+                OverlayUtil.renderImageLocation(client, graphics, lp, image, 0);
             }
         }
 
         return null;
-    }
-
-    private void drawImage(Client client, WorldView wv, WorldPoint worldPoint, Graphics2D graphics, BufferedImage image)
-    {
-        LocalPoint lp = LocalPoint.fromWorld(wv, worldPoint);
-        if(lp != null)
-        {
-            OverlayUtil.renderImageLocation(client, graphics, lp, image, worldPoint.getPlane());
-        }
     }
 
     private static BufferedImage resize(BufferedImage img, CompostIconSize iconSize)
